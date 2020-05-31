@@ -69,24 +69,8 @@ function logConsole(params) {
     return
   }
 
-  const { type, args, timestamp } = params
-  const level = type === 'error' ? 'error' : 'verbose'
-  const color = severityColors[level]
-  const icon = severityIcons[level]
-
-  const prefix = `[${new Date(timestamp).toISOString()}] ${icon} `
-  const prefixSpacer = ' '.repeat(prefix.length)
-
-  log(color(`${prefix}${chalk.bold(`console.${type}`)} called`))
-
-  const logAdditional = (msg) => {
-    log(color(`${prefixSpacer}${msg}`))
-  }
-
-  if (args) {
-    logAdditional(`Arguments:`)
-    logAdditional('  ' + JSON.stringify(args, null, 2).split('\n').join(`\n${prefixSpacer}  `).trimRight())
-  }
+  const { type, args } = params
+  console[type](...args)
 }
 
 function install(on, filter) {
