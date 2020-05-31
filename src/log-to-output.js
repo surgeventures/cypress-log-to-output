@@ -64,13 +64,26 @@ function logEntry(params) {
   }
 }
 
+function processArgs(args) {
+  return args.map(arg => {
+    if (arg.value !== undefined) {
+      return arg.value;
+    }
+
+    return JSON.stringify(arg);
+  });
+}
+
 function logConsole(params) {
   if (eventFilter && !eventFilter('console', params)) {
     return
   }
 
   const { type, args } = params
-  console[type](...args)
+  try {
+    console[type](...processArgs(args))
+  }
+  catch (e) {}
 }
 
 function install(on, filter) {
@@ -103,13 +116,11 @@ function browserLaunchHandler(browser = {}, launchOptions) {
     return debugLog(`Warning: An unsupported browser family was used, output will not be logged to console: ${browser.family}`)
   }
 
-  const rdp = ensureRdpPort(args)
-
   debugLog('Attempting to connect to Chrome Debugging Protocol')
 
   const tryConnect = () => {
     new CDP({
-      port: rdp
+      port: ensureRdpPort(args)
     })
     .then((cdp) => {
       debugLog('Connected to Chrome Debugging Protocol')
