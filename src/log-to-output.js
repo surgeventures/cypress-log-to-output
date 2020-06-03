@@ -55,7 +55,7 @@ function logEntry(params) {
   if (stackTrace && lineNumber) {
     logAdditional(`Stack trace line number: ${lineNumber}`)
     logAdditional(`Stack trace description: ${stackTrace.description}`)
-    logAdditional(`Stack call frames: ${stackTrace.callFrames.join(', ')}`)
+    logAdditional(`Stack call frames: ${JSON.stringify(stackTrace.callFrames)}`)
   }
 
   if (args) {
