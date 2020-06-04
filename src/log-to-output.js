@@ -133,11 +133,18 @@ function browserLaunchHandler(browser = {}, launchOptions) {
       cdp.Runtime.enable()
       cdp.Runtime.consoleAPICalled(logConsole)
 
+      cdp.on('error', (...args) => {
+        console.log('Chrome Debugging Protocol error')
+        console.log(JSON.stringify(args))
+      })
+
       cdp.on('disconnect', () => {
         debugLog('Chrome Debugging Protocol disconnected')
       })
     })
-    .catch(() => {
+    .catch((e) => {
+      console.log('Error when connecting to Chrome Debugging Protocol, retrying')
+      console.log(e)
       setTimeout(tryConnect, 100)
     })
   }
