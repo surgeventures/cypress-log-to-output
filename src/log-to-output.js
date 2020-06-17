@@ -118,9 +118,19 @@ function browserLaunchHandler(browser = {}, launchOptions) {
 
   debugLog('Attempting to connect to Chrome Debugging Protocol')
 
+  let maxRetries = 10
+  let tryCounter = 0
+
   const tryConnect = () => {
+    tryCounter++
+
+    if(tryCounter > maxRetries) {
+      return
+    }
+
+    const port = ensureRdpPort(args)
     new CDP({
-      port: ensureRdpPort(args)
+      port
     })
     .then((cdp) => {
       debugLog('Connected to Chrome Debugging Protocol')
@@ -142,9 +152,8 @@ function browserLaunchHandler(browser = {}, launchOptions) {
         debugLog('Chrome Debugging Protocol disconnected')
       })
     })
-    .catch((e) => {
-      console.log('Error when connecting to Chrome Debugging Protocol, retrying')
-      console.log(e)
+    .catch(() => {
+      console.log(`Error when connecting to Chrome Debugging Protocol, retrying ${tryCounter} / ${maxRetries}, port: ${port}`)
       setTimeout(tryConnect, 100)
     })
   }
